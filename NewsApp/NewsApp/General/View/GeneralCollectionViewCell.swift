@@ -12,8 +12,9 @@ final class GeneralCollectionViewCell: UICollectionViewCell {
     //MARK: - GUI Variables
     private lazy var imageView: UIImageView = {
         let view = UIImageView()
-        
-        view.image = UIImage(named: "worldNews") ?? UIImage.add
+        view.contentMode = .scaleAspectFill
+        view.clipsToBounds = true // Обрезаем выходящие за границы части
+        view.layer.masksToBounds = true
         return view
     }()
     
@@ -45,6 +46,17 @@ final class GeneralCollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    
+    //MARK: - Methods
+    func set(article: ArticleCellViewModel) {
+        titleLabel.text = article.title
+        if let data = article.imageData,
+            let image = UIImage(data: data) {
+            imageView.image = image
+        } else {
+            imageView.image = UIImage(named: "worldNews")
+        }
+    }
     
     //MARK: - Private methods
     private func setupUI() {

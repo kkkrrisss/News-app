@@ -42,6 +42,7 @@ final class BusinessViewController: UIViewController {
     init(viewModel: BusinessViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        self.viewModel.loadData()
         self.setupViewModel()
     }
     
@@ -91,7 +92,7 @@ final class BusinessViewController: UIViewController {
 extension BusinessViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        2
+        viewModel.numberOfCells > 1 ? 2 : 1
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

@@ -72,6 +72,7 @@ final class ApiManager {
             completion(.failure(NetworkingError.networkingError(error)))
         } else if let data = data {
             do {
+                //JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any]
                 let model = try JSONDecoder().decode(NewsResponseObject.self, from: data)
                 completion(.success(model.articles))
             }

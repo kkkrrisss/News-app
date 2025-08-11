@@ -36,11 +36,6 @@ final class BusinessViewModel: BusinessViewModelProtocol {
         }
     }
     
-    //MARK: - Initialization
-    init() {
-        loadData()
-    }
-    
     //MARK: - Methods
     func getArticle(for row: Int) -> ArticleCellViewModel {
         return articles[row]

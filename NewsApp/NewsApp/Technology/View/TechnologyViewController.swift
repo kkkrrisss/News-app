@@ -41,6 +41,7 @@ final class TechnologyViewController: UIViewController {
     init (viewModel: TechnologyViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
+        self.viewModel.loadData()
         self.setupViewModel()
     }
     

@@ -7,14 +7,38 @@
 
 import Foundation
 
+enum NewsType {
+    case general, business, technology
+}
+
 final class ApiManager {
     private static let apiKey = "d00fc88a711b402f95326cca3ab3b6db"
     private static let baseURl = "https://newsapi.org/v2/"
     private static let path = "everything"
     
+    private static var newsType: NewsType = .general
+    
+    private static var newsTypeString: String {
+        switch newsType {
+        case .general:
+           return "?sources=cnn"
+        case .business:
+            return "?q=business&sources=cnn"
+        case .technology:
+            return "?q=(technology OR science)&sources=cnn"
+        }
+    }
+    
+    
+
+    //private static let business = "?q=business&sources=cnn"
+    //private static let general = "?sources=cnn"
+    
     //Create url path and make request
-    static func getNews(completion: @escaping (Result<[ArticleResponseObject], Error>) -> ()) {
-        let stringlUrl = baseURl + path + "?sources=cnn&language=en" + "&apiKey=" + apiKey
+    static func getNews(enumNewsType: NewsType, completion: @escaping (Result<[ArticleResponseObject], Error>) -> ()) {
+        newsType = enumNewsType
+        
+        let stringlUrl = baseURl + path + newsTypeString + "&language=en" + "&apiKey=" + apiKey
         
         guard let url = URL(string: stringlUrl) else { return }
         
@@ -48,6 +72,7 @@ final class ApiManager {
             completion(.failure(NetworkingError.networkingError(error)))
         } else if let data = data {
             do {
+                //JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any]
                 let model = try JSONDecoder().decode(NewsResponseObject.self, from: data)
                 completion(.success(model.articles))
             }

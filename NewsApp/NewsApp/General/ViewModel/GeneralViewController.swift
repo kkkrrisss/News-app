@@ -15,7 +15,7 @@ class GeneralViewController: UIViewController {
     
     private lazy var searchBar: UISearchBar = {
         let searchBar = UISearchBar()
-        
+    
         return searchBar
     }()
     
@@ -27,7 +27,11 @@ class GeneralViewController: UIViewController {
         layout.minimumInteritemSpacing = 5 // Отступ между колонками (горизонтальный)
         layout.scrollDirection = .vertical
         
-        let collectionView = UICollectionView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height - searchBar.frame.height), collectionViewLayout: layout)
+        let collectionView = UICollectionView(frame: CGRect(x: 0,
+                                                            y: 0,
+                                                            width: view.frame.width,
+                                                            height: view.frame.height - searchBar.frame.height),
+                                              collectionViewLayout: layout)
         return collectionView
     }()
     
@@ -35,6 +39,13 @@ class GeneralViewController: UIViewController {
     private var viewModel: GeneralViewModelProtocol
     
     //MARK: - Life cycle
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupUI()
+    }
+
+    //MARK: - Initialization
     init (viewModel: GeneralViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -44,15 +55,8 @@ class GeneralViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    //MARK: - Private methods
     
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        setupUI()
-    }
-
-    //MARK: - Methods
     private func setupViewModel() {
         viewModel.reloadData = { [weak self] in
             self?.collectionView.reloadData()
@@ -67,8 +71,6 @@ class GeneralViewController: UIViewController {
         }
     }
     
-    //MARK: - Private methods
-
     private func setupUI() {
         view.addSubview(searchBar)
         view.addSubview(collectionView)
@@ -90,8 +92,7 @@ class GeneralViewController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(5)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-    }
-    
+    }    
 }
 
 //MARK: - UICollectionViewDataSource

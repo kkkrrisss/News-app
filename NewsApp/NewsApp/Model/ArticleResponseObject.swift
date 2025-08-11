@@ -18,6 +18,5 @@ struct ArticleResponseObject: Codable {
         case description
         case urlToImage
         case date = "publishedAt" 
-        
     }
 }

@@ -1,26 +1,26 @@
 //
-//  GeneralViewModel.swift
+//  BusinessViewModel.swift
 //  NewsApp
 //
-//  Created by Кристина Олейник on 06.08.2025.
+//  Created by Кристина Олейник on 07.08.2025.
 //
 
 import Foundation
 
-protocol GeneralViewModelProtocol {
+protocol BusinessViewModelProtocol {
     var reloadData: (() -> Void)? { get set }
     var showError: ((String) -> Void)? { get set }
     var reloadCell: ((Int) -> Void)? { get set }
     
     var numberOfCells: Int { get }
     
+    func loadData()
     func getArticle(for row: Int) -> ArticleCellViewModel
 }
 
-final class GeneralViewModel : GeneralViewModelProtocol {
-    
-    var showError: ((String) -> Void)?
+final class BusinessViewModel: BusinessViewModelProtocol {
     var reloadData: (() -> Void)?
+    var showError: ((String) -> Void)?
     var reloadCell: ((Int) -> Void)?
     
     //MARK: - Properties
@@ -36,21 +36,13 @@ final class GeneralViewModel : GeneralViewModelProtocol {
         }
     }
     
-    //MARK: - Initialization
-    init() {
-        loadData()
-    }
-    
-    
     //MARK: - Methods
     func getArticle(for row: Int) -> ArticleCellViewModel {
         return articles[row]
     }
     
-    //MARK: - Private method
-    private func loadData() {
-        //TODO: load Data
-        ApiManager.getNews(enumNewsType: .general) { [weak self] result in
+    func loadData() {
+        ApiManager.getNews(enumNewsType: .business) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let articles):
@@ -63,8 +55,9 @@ final class GeneralViewModel : GeneralViewModelProtocol {
                 }
             }
         }
-        //setupMockObjects()
     }
+    
+    //MARK: - Private method
     
     private func convertCellViewModel(_ articles: [ArticleResponseObject]) -> [ArticleCellViewModel] {
         return articles.map { ArticleCellViewModel(article: $0) }
@@ -86,9 +79,4 @@ final class GeneralViewModel : GeneralViewModelProtocol {
         }
     }
     
-    private func setupMockObjects() {
-        articles = [
-            ArticleCellViewModel(article: ArticleResponseObject(title: "First", description: "dhshhshhshshs", urlToImage: "jjjjjj", date: "26.01.2000"))
-        ]
-    }
 }

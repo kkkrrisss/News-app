@@ -7,38 +7,24 @@
 
 import Foundation
 
-enum NewsType {
-    case general, business, technology
-}
-
 final class ApiManager {
+    
+    enum NewsType: String {
+        case general = "general"
+        case business = "business"
+        case technology = "technology"
+    }
+    
     private static let apiKey = "d00fc88a711b402f95326cca3ab3b6db"
     private static let baseURl = "https://newsapi.org/v2/"
     private static let path = "everything"
     
-    private static var newsType: NewsType = .general
-    
-    private static var newsTypeString: String {
-        switch newsType {
-        case .general:
-           return "?sources=cnn"
-        case .business:
-            return "?q=business&sources=cnn"
-        case .technology:
-            return "?q=(technology OR science)&sources=cnn"
-        }
-    }
-    
-    
-
-    //private static let business = "?q=business&sources=cnn"
-    //private static let general = "?sources=cnn"
-    
     //Create url path and make request
-    static func getNews(enumNewsType: NewsType, completion: @escaping (Result<[ArticleResponseObject], Error>) -> ()) {
-        newsType = enumNewsType
+    static func getNews(enumNewsType: NewsType,
+                        page: Int,
+                        completion: @escaping (Result<[ArticleResponseObject], Error>) -> ()) {
         
-        let stringlUrl = baseURl + path + newsTypeString + "&language=en" + "&apiKey=" + apiKey
+        let stringlUrl = baseURl + path  + "?q=\(enumNewsType.rawValue)&sources=cnn&language=en&pageSize=20&page=\(page)" + "&apiKey=" + apiKey
         
         guard let url = URL(string: stringlUrl) else { return }
         

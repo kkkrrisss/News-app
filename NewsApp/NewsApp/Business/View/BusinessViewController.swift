@@ -34,6 +34,10 @@ final class BusinessViewController: UIViewController {
         super.viewDidLoad()
         
         setupUI()
+        collectionView.register(GeneralCollectionViewCell.self, forCellWithReuseIdentifier: "GeneralCollectionViewCell")
+        
+        collectionView.register(DetailsCollectionViewCell.self, forCellWithReuseIdentifier: "DetailsCollectionViewCell")
+        
     }
 
     
@@ -42,7 +46,7 @@ final class BusinessViewController: UIViewController {
     init(viewModel: BusinessViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        self.viewModel.loadData()
+        viewModel.loadData()
         self.setupViewModel()
     }
     
@@ -58,8 +62,8 @@ final class BusinessViewController: UIViewController {
             self?.collectionView.reloadData()
         }
         
-        viewModel.reloadCell = { [weak self] row in
-            self?.collectionView.reloadItems(at: [IndexPath(row: row, section: 1)])
+        viewModel.reloadCell = { [weak self] indexPath in
+            self?.collectionView.reloadItems(at: [indexPath])
         }
         
         viewModel.showError = { error in
@@ -71,10 +75,6 @@ final class BusinessViewController: UIViewController {
         view.backgroundColor = .white
         
         view.addSubview(collectionView)
-        
-        collectionView.register(GeneralCollectionViewCell.self, forCellWithReuseIdentifier: "GeneralCollectionViewCell")
-        
-        collectionView.register(DetailsCollectionViewCell.self, forCellWithReuseIdentifier: "DetailsCollectionViewCell")
         
         setupConstraints()
     }
@@ -92,25 +92,27 @@ final class BusinessViewController: UIViewController {
 extension BusinessViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        viewModel.numberOfCells > 1 ? 2 : 1
+        viewModel.sections.count
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        section == 0 ? 1 : (viewModel.numberOfCells - 1)
+        return viewModel.sections[section].items.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
+        guard let article = viewModel.sections[indexPath.section].items[indexPath.row] as? ArticleCellViewModel else { return UICollectionViewCell() }
         if indexPath.section == 0 {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GeneralCollectionViewCell", for: indexPath) as? GeneralCollectionViewCell else { return UICollectionViewCell() }
-            let article = viewModel.getArticle(for: 0)
+            
             cell.set(article: article)
+            
             return cell
             
         } else {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DetailsCollectionViewCell", for: indexPath) as? DetailsCollectionViewCell else { return UICollectionViewCell() }
-            let article = viewModel.getArticle(for: (indexPath.row + 1))
+            
             cell.set(article: article)
+            
             return cell
         }
     }
@@ -120,12 +122,16 @@ extension BusinessViewController: UICollectionViewDataSource {
 
 extension BusinessViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        var index = 0
-        if indexPath.section == 1 {
-            index = indexPath.row + 1
-        }
-        let article = viewModel.getArticle(for: index)
+        guard let article = viewModel.sections[indexPath.section].items[indexPath.row] as? ArticleCellViewModel else { return }
+
         navigationController?.pushViewController(NewsViewController(viewModel: NewsViewModel(article: article)), animated: true)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.row == (viewModel.sections[1].items.count - 15) {
+            viewModel.loadData()
+            print(viewModel.sections[1].items.count)
+        }
     }
 }
 

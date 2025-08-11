@@ -43,7 +43,7 @@ final class TechnologyViewModel: TechnologyViewModelProtocol {
     }
     
     func loadData() {
-        ApiManager.getNews(enumNewsType: .technology) { [weak self] result in
+        ApiManager.getNews(enumNewsType: .technology, page: 1) { [weak self] result in
             guard let self = self else { return }
             switch result {
             case .success(let articles):
@@ -66,7 +66,8 @@ final class TechnologyViewModel: TechnologyViewModelProtocol {
     
     private func loadImage() {
         for (index, article) in articles.enumerated() {
-            ApiManager.getImageData(url: article.imageUrl) { [weak self] result in
+            guard let url = article.imageUrl else { return }
+            ApiManager.getImageData(url: url) { [weak self] result in
                 DispatchQueue.main.async {
                     switch result {
                     case .success(let data):

@@ -34,10 +34,7 @@ final class BusinessViewController: UIViewController {
         super.viewDidLoad()
         
         setupUI()
-        collectionView.register(GeneralCollectionViewCell.self, forCellWithReuseIdentifier: "GeneralCollectionViewCell")
-        
-        collectionView.register(DetailsCollectionViewCell.self, forCellWithReuseIdentifier: "DetailsCollectionViewCell")
-        
+        viewModel.loadData()
     }
 
     
@@ -46,7 +43,6 @@ final class BusinessViewController: UIViewController {
     init(viewModel: BusinessViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
-        viewModel.loadData()
         self.setupViewModel()
     }
     
@@ -75,6 +71,10 @@ final class BusinessViewController: UIViewController {
         view.backgroundColor = .white
         
         view.addSubview(collectionView)
+        
+        collectionView.register(GeneralCollectionViewCell.self, forCellWithReuseIdentifier: "GeneralCollectionViewCell")
+        
+        collectionView.register(DetailsCollectionViewCell.self, forCellWithReuseIdentifier: "DetailsCollectionViewCell")
         
         setupConstraints()
     }
@@ -128,9 +128,8 @@ extension BusinessViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.row == (viewModel.sections[1].items.count - 15) {
+        if indexPath.row == (viewModel.sections[1].items.count - 5) {
             viewModel.loadData()
-            print(viewModel.sections[1].items.count)
         }
     }
 }

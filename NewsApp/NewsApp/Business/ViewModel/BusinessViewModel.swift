@@ -67,7 +67,6 @@ final class BusinessViewModel: BusinessViewModelProtocol {
     }
     
     private func loadImage() {
-        print(sections[1].items.count)
         for (i, section) in sections.enumerated() {
             for (index, item) in section.items.enumerated() {
                 if let article = item as? ArticleCellViewModel,

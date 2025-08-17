@@ -57,6 +57,8 @@ final class ApiManager {
         if let error = error {
             completion(.failure(NetworkingError.networkingError(error)))
         } else if let data = data {
+//            let rawResponse = String(data: data, encoding: .utf8)
+//            print("Raw API response:", rawResponse ?? "No data")
             do {
                 //JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any]
                 let model = try JSONDecoder().decode(NewsResponseObject.self, from: data)

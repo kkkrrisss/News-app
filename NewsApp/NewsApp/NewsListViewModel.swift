@@ -54,7 +54,8 @@ class NewsListViewModel: NewsListViewModelProtocol {
             self.loadImage()
         case .failure(let error):
             DispatchQueue.main.async {
-                self.showError?(error.localizedDescription)
+                let message = (error as? LocalizedError)?.errorDescription ?? error.localizedDescription
+                self.showError?(message)
                 print(error)
             }
         }

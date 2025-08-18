@@ -68,7 +68,10 @@ class GeneralViewController: UIViewController {
         }
         
         viewModel.showError = { error in
-            //TODO: show alert with error
+            Alert.showAlert(on: self,
+                            title: "Error",
+                            message: error,
+                            buttonTitle: "Cancel")
         }
     }
     
@@ -77,6 +80,9 @@ class GeneralViewController: UIViewController {
         view.addSubview(collectionView)
         
         collectionView.register(GeneralCollectionViewCell.self, forCellWithReuseIdentifier: "GeneralCollectionViewCell")
+        
+        let recognizer = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        view.addGestureRecognizer(recognizer)
         
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -96,6 +102,12 @@ class GeneralViewController: UIViewController {
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
     }
+    
+    @objc
+    private func hideKeyboard() {
+        searchBar.resignFirstResponder()
+    }
+    
 }
 
 //MARK: - UICollectionViewDataSource

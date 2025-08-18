@@ -34,8 +34,8 @@ final class ApiManager {
         
         guard let url = URL(string: stringlUrl) else { return }
         
-        let session = URLSession.shared.dataTask(with: url) { data, _, error in
-            handleResponse(data: data, error: error, completion: completion)
+        let session = URLSession.shared.dataTask(with: url) { data, response, error in
+            handleResponse(data: data, response: response, error: error, completion: completion)
         }
         
         session.resume()
@@ -58,23 +58,40 @@ final class ApiManager {
     
     //Handle response
     private static func handleResponse(data: Data?,
+                                       response: URLResponse?,
                                        error: Error?,
                                        completion: @escaping (Result<[ArticleResponseObject], Error>) -> ()) {
+        
+        
         if let error = error {
             completion(.failure(NetworkingError.networkingError(error)))
-        } else if let data = data {
-//            let rawResponse = String(data: data, encoding: .utf8)
-//            print("Raw API response:", rawResponse ?? "No data")
-            do {
-                //JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any]
-                let model = try JSONDecoder().decode(NewsResponseObject.self, from: data)
-                completion(.success(model.articles))
-            }
-            catch let decodeError {
-                completion(.failure(decodeError))
-            }
-        } else {
-            
+            return
+        }
+        
+        guard let httpResponse = response as? HTTPURLResponse else {
+            completion(.failure(NetworkingError.unknown))
+            return
+        }
+        
+        guard httpResponse.statusCode == 200 else {
+            completion(.failure(NetworkingError.apiError(statusCode: httpResponse.statusCode)))
+            return
+        }
+        
+        guard let data = data else {
+            completion(.failure(NetworkingError.unknown))
+            return
+        }
+        
+        //            let rawResponse = String(data: data, encoding: .utf8)
+        //            print("Raw API response:", rawResponse ?? "No data")
+        do {
+            //JSONSerialization.jsonObject(with: responseData, options: []) as? [String: Any]
+            let model = try JSONDecoder().decode(NewsResponseObject.self, from: data)
+            completion(.success(model.articles))
+        }
+        catch let decodeError {
+            completion(.failure(decodeError))
         }
     }
 }

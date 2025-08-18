@@ -7,77 +7,15 @@
 
 import Foundation
 
-protocol TechnologyViewModelProtocol {
-    var reloadData: (() -> Void)? { get set }
-    var showError: ((String) -> Void)? { get set }
-    var reloadCell: ((Int) -> Void)? { get set }
+final class TechnologyViewModel: NewsListViewModel {
     
-    var numberOfCells: Int { get }
-    
-    func loadData()
-    func getArticle(for row: Int) -> ArticleCellViewModel
-}
-
-
-final class TechnologyViewModel: TechnologyViewModelProtocol {
-    var reloadData: (() -> Void)?
-    var showError: ((String) -> Void)?
-    var reloadCell: ((Int) -> Void)?
-    
-    //MARK: - Properties
-    var numberOfCells: Int {
-        articles.count
-    }
-    
-    private var articles: [ArticleCellViewModel] = [] {
-        didSet {
-            DispatchQueue.main.async {
-                self.reloadData?()
-            }
-        }
-    }
-    
-    //MARK: - Methods
-    func getArticle(for row: Int) -> ArticleCellViewModel {
-        return articles[row]
-    }
-    
-    func loadData() {
-        ApiManager.getNews(enumNewsType: .technology, page: 1) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let articles):
-                self.articles = self.convertCellViewModel(articles)
-                self.loadImage()
-            case .failure(let error):
-                DispatchQueue.main.async {
-                    self.showError?(error.localizedDescription)
-                    print(error)
-                }
-            }
-        }
-    }
-    
-    //MARK: - Private method
-    
-    private func convertCellViewModel(_ articles: [ArticleResponseObject]) -> [ArticleCellViewModel] {
-        return articles.map { ArticleCellViewModel(article: $0) }
-    }
-    
-    private func loadImage() {
-        for (index, article) in articles.enumerated() {
-            guard let url = article.imageUrl else { return }
-            ApiManager.getImageData(url: url) { [weak self] result in
-                DispatchQueue.main.async {
-                    switch result {
-                    case .success(let data):
-                        self?.articles[index].imageData = data
-                        self?.reloadCell?(index)
-                    case .failure(let error):
-                        self?.showError?(error.localizedDescription)
-                    }
-                }
-            }
+    override func loadData(searchText: String?) {
+        super.loadData(searchText: searchText)
+        
+        ApiManager.getNews(enumNewsType: .technology,
+                           page: page,
+                           searchText: searchText) { [weak self] result in
+            self?.handleResult(result)
         }
     }
 }

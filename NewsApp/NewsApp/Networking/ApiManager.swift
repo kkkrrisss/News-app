@@ -22,9 +22,15 @@ final class ApiManager {
     //Create url path and make request
     static func getNews(enumNewsType: NewsType,
                         page: Int,
+                        searchText: String?,
                         completion: @escaping (Result<[ArticleResponseObject], Error>) -> ()) {
         
-        let stringlUrl = baseURl + path  + "?q=\(enumNewsType.rawValue)&sources=cnn&language=en&pageSize=20&page=\(page)" + "&apiKey=" + apiKey
+        var searchParameter: String = ""
+        if let searchText = searchText {
+            searchParameter = "+\(searchText)"
+        }
+        
+        let stringlUrl = baseURl + path  + "?q=\(enumNewsType.rawValue)" + searchParameter +  "&sources=cnn&language=en&pageSize=20&page=\(page)" + "&apiKey=" + apiKey
         
         guard let url = URL(string: stringlUrl) else { return }
         

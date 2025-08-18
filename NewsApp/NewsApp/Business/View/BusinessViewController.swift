@@ -27,20 +27,20 @@ final class BusinessViewController: UIViewController {
         return collectionView
     }()
     //MARK: - Properties
-    private var viewModel: BusinessViewModelProtocol
+    private var viewModel: NewsListViewModelProtocol
     
     //MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupUI()
-        viewModel.loadData()
+        viewModel.loadData(searchText: nil)
     }
 
     
     //MARK: - Initialization
     
-    init(viewModel: BusinessViewModelProtocol) {
+    init(viewModel: NewsListViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         self.setupViewModel()
@@ -101,6 +101,7 @@ extension BusinessViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let article = viewModel.sections[indexPath.section].items[indexPath.row] as? ArticleCellViewModel else { return UICollectionViewCell() }
+        
         if indexPath.section == 0 {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GeneralCollectionViewCell", for: indexPath) as? GeneralCollectionViewCell else { return UICollectionViewCell() }
             
@@ -129,7 +130,7 @@ extension BusinessViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if indexPath.row == (viewModel.sections[1].items.count - 5) {
-            viewModel.loadData()
+            viewModel.loadData(searchText: nil)
         }
     }
 }

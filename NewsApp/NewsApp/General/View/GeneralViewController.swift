@@ -36,17 +36,18 @@ class GeneralViewController: UIViewController {
     }()
     
     //MARK: - Properties
-    private var viewModel: GeneralViewModelProtocol
+    private var viewModel: NewsListViewModelProtocol
     
     //MARK: - Life cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setupUI()
+        viewModel.loadData(searchText: nil)
     }
 
     //MARK: - Initialization
-    init (viewModel: GeneralViewModelProtocol) {
+    init (viewModel: NewsListViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         self.setupViewModel()
@@ -62,8 +63,8 @@ class GeneralViewController: UIViewController {
             self?.collectionView.reloadData()
         }
         
-        viewModel.reloadCell = { [weak self] row in
-            self?.collectionView.reloadItems(at: [IndexPath(row: row, section: 0)])
+        viewModel.reloadCell = { [weak self] indexPath in
+            self?.collectionView.reloadItems(at: [indexPath])
         }
         
         viewModel.showError = { error in
@@ -79,6 +80,8 @@ class GeneralViewController: UIViewController {
         
         collectionView.dataSource = self
         collectionView.delegate = self
+        searchBar.delegate = self
+        
         setupConstraints()
     }
     
@@ -92,20 +95,28 @@ class GeneralViewController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(5)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
-    }    
+    }
 }
 
 //MARK: - UICollectionViewDataSource
 extension GeneralViewController: UICollectionViewDataSource {
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        viewModel.sections.count
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.numberOfCells
+        viewModel.sections[section].items.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GeneralCollectionViewCell", for: indexPath) as? GeneralCollectionViewCell else { return UICollectionViewCell()}
         
-        let article = viewModel.getArticle(for: indexPath.row)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GeneralCollectionViewCell", for: indexPath) as? GeneralCollectionViewCell else { return UICollectionViewCell()}
+       
+        guard let article = viewModel.sections[indexPath.section].items[indexPath.row] as? ArticleCellViewModel else { return UICollectionViewCell() }
+        
         cell.set(article: article)
+        
         return cell
     }
     
@@ -114,7 +125,35 @@ extension GeneralViewController: UICollectionViewDataSource {
 //MARK: - UICollectionViewDelegate
 extension GeneralViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let article = viewModel.getArticle(for: indexPath.row)
+        guard let article = viewModel.sections[indexPath.section].items[indexPath.row] as? ArticleCellViewModel else { return }
+
         navigationController?.pushViewController(NewsViewController(viewModel: NewsViewModel(article: article)), animated: true)
     }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath.row == (viewModel.sections[0].items.count - 20) {
+            viewModel.loadData(searchText: searchBar.text)
+        }
+    }
+}
+
+
+extension GeneralViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let text = searchBar.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        
+        viewModel.loadData(searchText: text)
+        searchBar.searchTextField.resignFirstResponder()
+    }
+    func searchBar(_ searchBar: UISearchBar,
+                   textDidChange searchText: String) {
+        if searchText.isEmpty {
+            viewModel.loadData(searchText: nil)
+        }
+    }
+    
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        print(searchBar.text)
+//        print(searchText)
+//    }
 }

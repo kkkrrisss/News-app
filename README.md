@@ -10,6 +10,6 @@ NewsApp is an iOS news reader built in Swift with MVVM and SnapKit, fetching art
 - Displays articles with images and categories  
 - Search news by keywords  
 - Handles network errors gracefully  
-- Clean MVVM architecture for easy expansion  
+- MVVM architecture
 - Adaptive layout with SnapKit  
 - TabBar-based navigation  

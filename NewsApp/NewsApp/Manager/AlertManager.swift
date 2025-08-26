@@ -7,11 +7,11 @@
 
 import UIKit
 
-final class Alert {
+final class AlertManager {
     static func showAlert(on viewController: UIViewController,
-                          title: String,
+                          title: String = "Error",
                           message: String,
-                          buttonTitle: String) {
+                          buttonTitle: String = "Cancel") {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         let action = UIAlertAction(title: buttonTitle, style: .default)
         alert.addAction(action)

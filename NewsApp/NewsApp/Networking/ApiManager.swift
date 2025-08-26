@@ -30,7 +30,7 @@ final class ApiManager {
             searchParameter = "+\(searchText)"
         }
         
-        let stringlUrl = baseURl + path  + "?q=\(enumNewsType.rawValue)" + searchParameter +  "&sources=cnn&language=en&pageSize=20&page=\(page)" + "&apiKey=" + apiKey
+        let stringlUrl = baseURl + path  + "?q=\(enumNewsType.rawValue)" + searchParameter +  "&sources=bbc-news&language=en&pageSize=20&page=\(page)" + "&apiKey=" + apiKey
         
         guard let url = URL(string: stringlUrl) else { return }
         

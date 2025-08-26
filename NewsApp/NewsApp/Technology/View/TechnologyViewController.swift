@@ -60,10 +60,8 @@ final class TechnologyViewController: UIViewController {
         }
         
         viewModel.showError = { error in
-            Alert.showAlert(on: self,
-                            title: "Error",
-                            message: error,
-                            buttonTitle: "Cancel")
+            AlertManager.showAlert(on: self,
+                            message: error)
         }
     }
     

@@ -43,7 +43,9 @@ class GeneralViewController: UIViewController {
         super.viewDidLoad()
         
         setupUI()
+        setupGesture()
         viewModel.loadData(searchText: nil)
+        
     }
 
     //MARK: - Initialization
@@ -51,6 +53,7 @@ class GeneralViewController: UIViewController {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         self.setupViewModel()
+
     }
     
     required init?(coder: NSCoder) {
@@ -68,10 +71,8 @@ class GeneralViewController: UIViewController {
         }
         
         viewModel.showError = { error in
-            Alert.showAlert(on: self,
-                            title: "Error",
-                            message: error,
-                            buttonTitle: "Cancel")
+            AlertManager.showAlert(on: self,
+                            message: error)
         }
     }
     
@@ -81,14 +82,18 @@ class GeneralViewController: UIViewController {
         
         collectionView.register(GeneralCollectionViewCell.self, forCellWithReuseIdentifier: "GeneralCollectionViewCell")
         
-        let recognizer = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
-        view.addGestureRecognizer(recognizer)
-        
         collectionView.dataSource = self
         collectionView.delegate = self
         searchBar.delegate = self
         
         setupConstraints()
+    }
+    
+    private func setupGesture() {
+        let recognizer = UITapGestureRecognizer(target: self,
+                                                action: #selector(hideKeyboard))
+        recognizer.cancelsTouchesInView = false
+        view.addGestureRecognizer(recognizer)
     }
     
     private func setupConstraints() {
@@ -143,7 +148,7 @@ extension GeneralViewController: UICollectionViewDelegate {
     }
     
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.row == (viewModel.sections[0].items.count - 20) {
+        if indexPath.row == (viewModel.sections[indexPath.section].items.count - 15) {
             viewModel.loadData(searchText: searchBar.text)
         }
     }

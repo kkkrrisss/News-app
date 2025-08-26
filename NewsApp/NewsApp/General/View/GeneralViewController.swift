@@ -90,7 +90,9 @@ class GeneralViewController: UIViewController {
     }
     
     private func setupGesture() {
-        let recognizer = UITapGestureRecognizer(target: self, action: #selector(hideKeyboard))
+        let recognizer = UITapGestureRecognizer(target: self,
+                                                action: #selector(hideKeyboard))
+        recognizer.cancelsTouchesInView = false
         view.addGestureRecognizer(recognizer)
     }
     
@@ -139,14 +141,17 @@ extension GeneralViewController: UICollectionViewDataSource {
 
 //MARK: - UICollectionViewDelegate
 extension GeneralViewController: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    func collectionView(_ collectionView: UICollectionView,
+                        didSelectItemAt indexPath: IndexPath) {
         guard let article = viewModel.sections[indexPath.section].items[indexPath.row] as? ArticleCellViewModel else { return }
 
         navigationController?.pushViewController(NewsViewController(viewModel: NewsViewModel(article: article)), animated: true)
     }
     
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if indexPath.row == (viewModel.sections[0].items.count - 20) {
+    func collectionView(_ collectionView: UICollectionView,
+                        willDisplay cell: UICollectionViewCell,
+                        forItemAt indexPath: IndexPath) {
+        if indexPath.row == (viewModel.sections[indexPath.section].items.count - 15) {
             viewModel.loadData(searchText: searchBar.text)
         }
     }
